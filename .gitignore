@@ -42,7 +42,29 @@ htmlcov/
 *.swp
 *.swo
 
-# OS generated files
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# Confidential / Secrets / Credentials
+.env
+.env.*
+*.env
+*.pem
+*.key
+*.pkcs12
+*.pfx
+*.p12
+*.cert
+*.crt
+id_rsa*
+id_ed25519*
+secrets.json
+credentials.json
+*_token.txt
+*.token
+
+# OS & Log files
 .DS_Store
 Thumbs.db
-
+*.log
