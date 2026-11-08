@@ -103,6 +103,26 @@ class ModelConfig:
     xgb_eval_metric: str = "logloss"
 
 
+PUBLISHED_ABSTRACT: str = (
+    "Chronic Kidney Disease (CKD) impacts almost 10% of adults globally, and it is frequently "
+    "developing silently in an individual to become End-Stage Renal Disease (ESRD), necessitating immediate "
+    "risk assessment. Current models are based on data of structured clinical parameters such as GFR, serum "
+    "creatinine, and blood pressure but neglect pharmacological events controlling disease progression. Drug-induced "
+    "nephrotoxicity, particularly when polypharmacy occurs, is one of the most potent but least-exploited predictors, "
+    "as related information is usually encoded in unstructured data sources, including drug labels. We present "
+    "a multimodal learning framework for combining structured clinical data with semantic representations from "
+    "drug-related text. Here we present a 1,659 patient sample dataset over 37 features pre-processed via imputation "
+    "and normalization. BioBERT was used to encode drug label information, which generates embeddings capturing hidden "
+    "nephrotoxic signals. These embeddings applied with clinical characteristics were included in data models such as "
+    "Logistic Regression, Random Forest and XGBoost. The multimodal approach outperformed unimodal models with a total "
+    "of 96.00% accuracy, 0.9498 F1-score, and 0.9982 AUC on XGBoost. Text-based embedding contributed approximately "
+    "24% of total performance while demonstrating the significant importance of pharmaceutical data. The results "
+    "indicate high sensitivity and small misclassification, which enhances identification of high risk patients. "
+    "This framework helps optimize CKD risk stratification by integrating clinical and text data, with future work "
+    "primarily directed towards validation and interpretability."
+)
+
+
 @dataclass
 class HistoricalBenchmarkTargets:
     """Previously reported experimental values for verification and reproduction."""
@@ -114,4 +134,5 @@ class HistoricalBenchmarkTargets:
     xgboost_acc: float = 96.00
     xgboost_f1: float = 0.9498
     xgboost_roc_auc: float = 0.9982
+    text_contribution_pct: float = 24.0
 

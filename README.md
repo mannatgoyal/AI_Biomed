@@ -5,20 +5,23 @@
 [![HuggingFace BioBERT](https://img.shields.io/badge/BioBERT-v1.1-yellow.svg)](https://huggingface.co/dmis-lab/biobert-v1.1)
 [![XGBoost](https://img.shields.io/badge/XGBoost-2.0+-green.svg)](https://xgboost.readthedocs.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
-[![Tests: 11 Passed](https://img.shields.io/badge/tests-11%20passed-brightgreen.svg)](tests/)
+[![Tests: 12 Passed](https://img.shields.io/badge/tests-12%20passed-brightgreen.svg)](tests/)
 
 ---
 
-## 1. Overview & Clinical Motivation
+## 1. Overview & Published Abstract
 
-**AI_Biomed** is an open-source biomedical machine learning and clinical natural language processing (NLP) framework designed for **Chronic Kidney Disease (CKD) risk stratification** and **drug-induced nephrotoxicity prediction**. 
+> ### **Published Abstract**
+> *Chronic Kidney Disease (CKD) impacts almost 10% of adults globally, and it is frequently developing silently in an individual to become End-Stage Renal Disease (ESRD), necessitating immediate risk assessment. Current models are based on data of structured clinical parameters such as GFR, serum creatinine, and blood pressure but neglect pharmacological events controlling disease progression. Drug-induced nephrotoxicity, particularly when polypharmacy occurs, is one of the most potent but least-exploited predictors, as related information is usually encoded in unstructured data sources, including drug labels. We present a multimodal learning framework for combining structured clinical data with semantic representations from drug-related text. Here we present a 1,659 patient sample dataset over 37 features pre-processed via imputation and normalization. BioBERT was used to encode drug label information, which generates embeddings capturing hidden nephrotoxic signals. These embeddings applied with clinical characteristics were included in data models such as Logistic Regression, Random Forest and XGBoost. The multimodal approach outperformed unimodal models with a total of **96.00% accuracy**, **0.9498 F1-score**, and **0.9982 AUC** on XGBoost. Text-based embedding contributed approximately **24% of total performance** while demonstrating the significant importance of pharmaceutical data. The results indicate high sensitivity and small misclassification, which enhances identification of high risk patients. This framework helps optimize CKD risk stratification by integrating clinical and text data, with future work primarily directed towards validation and interpretability.*
+
+### Clinical Problem Formulation
 
 In contemporary nephrology, patient vulnerability to acute renal impairment and accelerated CKD progression is driven by the complex confluence of:
 1. **Patient Baseline Susceptibility**: Chronic clinical indicators including serum creatinine, blood urea nitrogen (BUN), estimated glomerular filtration rate (eGFR), proteinuria, electrolyte imbalances, and comorbidities (diabetes, systemic hypertension).
-2. **Pharmacological Hazard**: Pharmacotherapy exposure (dosage, duration), cheminformatic molecular properties (molecular weight, LogP, topological polar surface area, 3D shape indices), and pharmacokinetic (PK) clearance parameters.
-3. **Unstructured Clinical Text**: Physician clinical notes, adverse drug reaction (ADR) reports, black-box warnings, and contraindication narratives from FDA product labels.
+2. **Pharmacological Events & Polypharmacy**: Cumulative nephrotoxic burden (e.g. concurrent ACE inhibitors, diuretics, NSAIDs, aminoglycosides, chemotherapeutics), drug-drug interactions, and dosage-duration exposure profiles.
+3. **Unstructured Pharmaceutical Evidence**: Drug labels, black-box warnings, contraindications, and adverse reaction descriptions containing rich semantic signals of tubular, glomerular, and interstitial injury.
 
-This project reconstructs and expands upon the lost historical implementation of **AI_Biomed**, providing an end-to-end multimodal architecture that extracts 768-dimensional contextual biomedical embeddings using **BioBERT** (`dmis-lab/biobert-v1.1`), fuses them with 37 normalized clinical variables, and performs predictive modeling using tuned **XGBoost** and classical baselines.
+This repository serves as the complete, permanent reconstruction of **AI_Biomed**, establishing a publication-grade, fully reproducible codebase. BioBERT (`dmis-lab/biobert-v1.1`) extracts 768-dimensional contextual biomedical embeddings from drug and clinical text, which are fused with 37 normalized clinical variables for classification with tuned XGBoost and baselines.
 
 ---
 

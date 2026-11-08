@@ -315,7 +315,28 @@ elif nav_choice == "🧠 Model Interpretability (SHAP)":
 elif nav_choice == "📖 About & Research Methodology":
     st.markdown("<div class='main-header'>📖 About AI_Biomed</div>", unsafe_allow_html=True)
     st.markdown("""
-    ### Project Identity & Reconstruction
+    ### Published Study Abstract
+
+    > *Chronic Kidney Disease (CKD) impacts almost 10% of adults globally, and it is frequently
+    > developing silently in an individual to become End-Stage Renal Disease (ESRD), necessitating immediate
+    > risk assessment. Current models are based on data of structured clinical parameters such as GFR, serum
+    > creatinine, and blood pressure but neglect pharmacological events controlling disease progression. Drug-induced
+    > nephrotoxicity, particularly when polypharmacy occurs, is one of the most potent but least-exploited predictors,
+    > as related information is usually encoded in unstructured data sources, including drug labels. We present
+    > a multimodal learning framework for combining structured clinical data with semantic representations from
+    > drug-related text. Here we present a 1,659 patient sample dataset over 37 features pre-processed via imputation
+    > and normalization. BioBERT was used to encode drug label information, which generates embeddings capturing hidden
+    > nephrotoxic signals. These embeddings applied with clinical characteristics were included in data models such as
+    > Logistic Regression, Random Forest and XGBoost. The multimodal approach outperformed unimodal models with a total
+    > of **96.00% accuracy**, **0.9498 F1-score**, and **0.9982 AUC** on XGBoost. Text-based embedding contributed approximately
+    > **24% of total performance** while demonstrating the significant importance of pharmaceutical data. The results
+    > indicate high sensitivity and small misclassification, which enhances identification of high risk patients.
+    > This framework helps optimize CKD risk stratification by integrating clinical and text data, with future work
+    > primarily directed towards validation and interpretability.*
+
+    ---
+
+    ### Project Identity & Permanent Research Codebase
     **AI_Biomed** is an open-source multimodal research framework designed for Chronic Kidney Disease risk prediction and drug nephrotoxicity modeling.
     
     This implementation represents the reconstructed and validated version of the AI_Biomed project, developed to serve as the permanent research codebase hosted at:
@@ -324,7 +345,7 @@ elif nav_choice == "📖 About & Research Methodology":
     ### Core Technology Stack
     - **Language Model**: BioBERT v1.1 (`dmis-lab/biobert-v1.1`, 768 dimensions)
     - **Classifier**: Tuned XGBoost (eXtreme Gradient Boosting)
-    - **Baselines**: Logistic Regression, Random Forest, SVM, Deep Multimodal MLP
+    - **Baselines**: Logistic Regression (75.30%), Random Forest (93.20%), SVM, Deep Multimodal MLP
     - **Preprocessing**: KNN Imputation ($k=5$), Min-Max Feature Scaling, ANOVA Feature Selection (37 clinical features)
     - **Explainability**: SHAP (SHapley Additive exPlanations) TreeExplainer
     
