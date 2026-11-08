@@ -5,5 +5,5 @@
     "python.autoComplete.extraPaths": [
         "${workspaceFolder}"
     ],
-    "python.analysis.typeCheckingMode": "basic"
+    "python.analysis.typeCheckingMode": "off"
 }

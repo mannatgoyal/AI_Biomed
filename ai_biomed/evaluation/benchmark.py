@@ -12,7 +12,7 @@ Validates reconstructed model performance against previously reported experiment
 """
 
 import logging
-from typing import Dict, Any, Tuple, Optional
+from typing import Optional, Tuple
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -20,7 +20,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 import xgboost as xgb
 
-from ai_biomed.config import PathConfig, PreprocessingConfig, BioBERTConfig, ModelConfig, HistoricalBenchmarkTargets
+from ai_biomed.config import PathConfig, PreprocessingConfig, BioBERTConfig, HistoricalBenchmarkTargets
 from ai_biomed.data.loader import load_ckd_general_dataset
 from ai_biomed.data.preprocessor import ClinicalPreprocessor
 from ai_biomed.data.text_generator import generate_patient_clinical_narratives
@@ -47,7 +47,6 @@ def run_historical_benchmark(
     cfg_path = path_config or PathConfig()
     cfg_prep = PreprocessingConfig()
     cfg_bert = BioBERTConfig()
-    cfg_model = ModelConfig()
     targets = HistoricalBenchmarkTargets()
 
     logger.info("=" * 70)
@@ -70,8 +69,9 @@ def run_historical_benchmark(
     cache_path = cfg_path.biobert_ckd_cache_path
 
     if cache_path.exists():
-        logger.info(f"Loading precomputed 768-dim BioBERT embeddings from cache: {cache_path}")
-        X_biobert = np.load(cache_path)
+        logger.info("Loading precomputed 768-dim BioBERT embeddings from cache: %s", cache_path)
+        loaded = np.load(cache_path)
+        X_biobert: np.ndarray = loaded if isinstance(loaded, np.ndarray) else np.asarray(loaded)
     else:
         logger.info("Generating clinical narratives and extracting BioBERT embeddings...")
         narratives = generate_patient_clinical_narratives(df)
@@ -197,4 +197,3 @@ def run_historical_benchmark(
         print("=" * 80 + "\n")
 
     return metrics_df, comparison_df
-
