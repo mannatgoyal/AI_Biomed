@@ -9,7 +9,7 @@ Loads surviving cohorts:
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Union, Tuple
+from typing import Optional, Union, Tuple, List
 import pandas as pd
 
 from ai_biomed.config import PathConfig
@@ -25,7 +25,7 @@ class DatasetBundle:
     df_drug_labels: pd.DataFrame
 
 
-def _find_file_case_insensitive(directory: Path, target_names: list[str]) -> Path:
+def _find_file_case_insensitive(directory: Path, target_names: List[str]) -> Path:
     """Finds a file matching any name in target_names, handling typos like Dsease/Disease."""
     for name in target_names:
         p = directory / name
@@ -141,3 +141,4 @@ def load_all_datasets(path_config: Optional[PathConfig] = None) -> DatasetBundle
         df_ckd_nephro=load_ckd_nephrotoxic_dataset(path_config=cfg),
         df_drug_labels=load_drug_labels_dataset(path_config=cfg),
     )
+

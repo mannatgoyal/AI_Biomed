@@ -122,3 +122,4 @@ def format_metrics_table(metrics_list: List[ModelEvaluationMetrics]) -> pd.DataF
     rows = [m.to_dict() for m in metrics_list]
     df = pd.DataFrame(rows)
     return df
+

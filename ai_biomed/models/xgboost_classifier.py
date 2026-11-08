@@ -80,3 +80,4 @@ class XGBoostBiomedClassifier:
 
     def get_booster(self):
         return self.model.get_booster()
+

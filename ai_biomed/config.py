@@ -114,3 +114,4 @@ class HistoricalBenchmarkTargets:
     xgboost_acc: float = 96.00
     xgboost_f1: float = 0.9498
     xgboost_roc_auc: float = 0.9982
+

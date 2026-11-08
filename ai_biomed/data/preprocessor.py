@@ -171,3 +171,4 @@ class NephrotoxicDataPreprocessor:
             scaler=self.scaler,
             imputer=KNNImputer(n_neighbors=self.config.knn_neighbors),
         )
+

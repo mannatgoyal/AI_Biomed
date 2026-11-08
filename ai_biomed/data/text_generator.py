@@ -177,3 +177,4 @@ def generate_label_narratives(df_labels: pd.DataFrame) -> List[str]:
         )
         narratives.append(narrative)
     return narratives
+

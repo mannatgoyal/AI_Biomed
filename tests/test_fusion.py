@@ -1,6 +1,5 @@
 """Tests for multimodal feature fusion engine."""
 
-import pytest
 import numpy as np
 from ai_biomed.fusion.feature_fusion import MultimodalFusionEngine
 

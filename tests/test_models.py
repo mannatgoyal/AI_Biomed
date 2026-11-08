@@ -1,6 +1,5 @@
 """Tests for machine learning models and baselines."""
 
-import pytest
 import numpy as np
 from ai_biomed.models.baselines import LogisticRegressionBaseline, RandomForestBaseline, SVMBaseline
 from ai_biomed.models.xgboost_classifier import XGBoostBiomedClassifier

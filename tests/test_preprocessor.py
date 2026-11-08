@@ -1,8 +1,7 @@
 """Tests for clinical preprocessing, imputation, scaling, and feature selection."""
 
-import pytest
 import numpy as np
-from ai_biomed.data.loader import load_ckd_general_dataset
+from ai_biomed.data.loader import load_ckd_general_dataset, load_ckd_nephrotoxic_dataset
 from ai_biomed.data.preprocessor import ClinicalPreprocessor, NephrotoxicDataPreprocessor
 from ai_biomed.config import PreprocessingConfig
 
@@ -35,3 +34,13 @@ def test_clinical_preprocessor_full_transform():
     
     assert X_scaled.shape == (1659, 37)
     assert len(y) == 1659
+
+
+def test_nephrotoxic_preprocessor():
+    df = load_ckd_nephrotoxic_dataset()
+    preprocessor = NephrotoxicDataPreprocessor()
+    processed = preprocessor.fit_transform(df, target_col="ckd_risk_label")
+    
+    assert processed.X_train.shape[1] == 35
+    assert len(processed.feature_names) == 35
+    assert not np.isnan(processed.X_train).any()

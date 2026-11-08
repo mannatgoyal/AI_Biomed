@@ -137,3 +137,4 @@ SHAP decomposes individual patient predictions into additive feature contributio
 1. **Clinical Narrative Synthesis**: In the surviving repository, patient text was reconstructed from tabular labs and medical histories into standardized clinical vignettes.
 2. **Dual Cohort Roles**: The 1,659-sample general cohort provides population-level CKD diagnosis, while the 1,500-sample cohort provides drug-induced nephrotoxicity and multi-stage risk stratification.
 3. **Environment Isolation**: BioBERT runs strictly offline using pre-cached weights in `~/.cache/huggingface`, requiring zero network calls during training or inference.
+

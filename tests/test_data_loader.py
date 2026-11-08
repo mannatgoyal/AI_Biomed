@@ -1,6 +1,5 @@
 """Tests for data loading and schema validation."""
 
-import pytest
 import pandas as pd
 from ai_biomed.data.loader import (
     load_ckd_general_dataset,

@@ -12,7 +12,7 @@ Validates reconstructed model performance against previously reported experiment
 """
 
 import logging
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, Optional
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 def run_historical_benchmark(
-    path_config: PathConfig = None,
+    path_config: Optional[PathConfig] = None,
     verbose: bool = True
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Runs the full historical reconstruction benchmark and verifies alignment with target figures.
@@ -197,3 +197,4 @@ def run_historical_benchmark(
         print("=" * 80 + "\n")
 
     return metrics_df, comparison_df
+

@@ -134,3 +134,4 @@ AIbiomed/
 4. **Fusion Step**: `ai_biomed.fusion.feature_fusion` concatenates structured clinical vectors with BioBERT embeddings (or projected $d=16$ components).
 5. **Model Step**: `ai_biomed.models` trains baseline models alongside the champion XGBoost classifier.
 6. **Interpretability Step**: `ai_biomed.explainability` computes SHAP interaction values, attributing individual risk scores to clinical parameters and language features.
+

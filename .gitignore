@@ -36,7 +36,8 @@ ENV/
 htmlcov/
 
 # IDE / Editor configuration
-.vscode/
+.vscode/*
+!.vscode/settings.json
 .idea/
 *.swp
 *.swo
@@ -44,3 +45,4 @@ htmlcov/
 # OS generated files
 .DS_Store
 Thumbs.db
+

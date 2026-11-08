@@ -1,6 +1,5 @@
 """Tests for BioBERT contextual embedding extraction and PCA projection."""
 
-import pytest
 import numpy as np
 from ai_biomed.nlp.biobert_embedder import BioBERTEmbedder
 from ai_biomed.config import BioBERTConfig

@@ -96,3 +96,4 @@ class MultimodalNeuralClassifier:
             logits = self.model(x_t)
             probs = torch.softmax(logits, dim=1).numpy()
         return probs
+

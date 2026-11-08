@@ -140,3 +140,4 @@ class BaselineModelSuite:
             logger.info(f"Training baseline: {name}...")
             model.fit(X_train, y_train)
         return self
+

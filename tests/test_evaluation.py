@@ -1,6 +1,5 @@
 """Tests for evaluation metrics and reporting."""
 
-import pytest
 import numpy as np
 from ai_biomed.evaluation.metrics import compute_evaluation_metrics, format_metrics_table
 

@@ -162,3 +162,4 @@ class BioBERTEmbedder:
             self.pca = PCA(n_components=n_components, random_state=42)
             return self.pca.fit_transform(embeddings)
         return self.pca.transform(embeddings)
+
