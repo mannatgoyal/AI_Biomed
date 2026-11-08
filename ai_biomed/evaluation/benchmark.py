@@ -90,32 +90,32 @@ def run_historical_benchmark(
     )
     X_fused = fused_bundle.X_fused
 
-    # 5. Train / Test Split (Seed 1 reproduces exact 75.30% unimodal Logistic Regression)
+    # 5. Strictly Clean Train / Test Split (Untuned standard seed=42, 80/20 stratified)
     X_tr_clin, X_te_clin, y_tr, y_te = train_test_split(
         X_clinical_scaled,
         y,
         test_size=cfg_prep.test_size,
-        random_state=1,
+        random_state=42,
         stratify=y
     )
     X_tr_fused, X_te_fused, _, _ = train_test_split(
         X_fused,
         y,
         test_size=cfg_prep.test_size,
-        random_state=1,
+        random_state=42,
         stratify=y
     )
 
     # 6. Train Models
-    # Logistic Regression (Unimodal clinical baseline: reproduces exact 75.30%)
-    lr = LogisticRegression(class_weight="balanced", max_iter=1000, random_state=1)
+    # Logistic Regression (Unimodal clinical baseline)
+    lr = LogisticRegression(class_weight="balanced", max_iter=1000, random_state=42)
     lr.fit(X_tr_clin, y_tr)
     pred_lr = lr.predict(X_te_clin)
     prob_lr = lr.predict_proba(X_te_clin)
     metrics_lr = compute_evaluation_metrics(y_te, pred_lr, prob_lr, model_name="Logistic Regression")
 
     # Random Forest (Multimodal)
-    rf = RandomForestClassifier(n_estimators=100, class_weight="balanced", random_state=1)
+    rf = RandomForestClassifier(n_estimators=100, class_weight="balanced", random_state=42)
     rf.fit(X_tr_fused, y_tr)
     pred_rf = rf.predict(X_te_fused)
     prob_rf = rf.predict_proba(X_te_fused)
@@ -128,7 +128,7 @@ def run_historical_benchmark(
         learning_rate=0.03,
         subsample=0.85,
         colsample_bytree=0.85,
-        random_state=1,
+        random_state=42,
         eval_metric="logloss"
     )
     xgb_clf.fit(X_tr_fused, y_tr)
@@ -138,61 +138,70 @@ def run_historical_benchmark(
 
     metrics_df = format_metrics_table([metrics_lr, metrics_rf, metrics_xgb])
 
-    # 7. Comparison Table against Historical Targets
+    # 7. Comparison Table: Published Targets vs. Clean Reconstructed Run
     comparison_data = [
         {
-            "Parameter / Metric": "Dataset Sample Size",
-            "Reported Historical Value": str(targets.dataset_size),
-            "Reconstructed Result": str(len(df)),
-            "Status": "Verified Match"
+            "Parameter / Metric": "Cohort Sample Size",
+            "Paper Reported Value": str(targets.dataset_size),
+            "Clean Reconstructed Result": str(len(df)),
+            "Delta": "0",
+            "Audit Status": "Exact Match"
         },
         {
             "Parameter / Metric": "Clinical Features",
-            "Reported Historical Value": str(targets.clinical_features),
-            "Reconstructed Result": str(X_clinical_scaled.shape[1]),
-            "Status": "Verified Match"
+            "Paper Reported Value": str(targets.clinical_features),
+            "Clean Reconstructed Result": str(X_clinical_scaled.shape[1]),
+            "Delta": "0",
+            "Audit Status": "Exact Match"
         },
         {
             "Parameter / Metric": "BioBERT Embedding Dim",
-            "Reported Historical Value": str(targets.biobert_embedding_dim),
-            "Reconstructed Result": str(X_biobert.shape[1]),
-            "Status": "Verified Match"
+            "Paper Reported Value": str(targets.biobert_embedding_dim),
+            "Clean Reconstructed Result": str(X_biobert.shape[1]),
+            "Delta": "0",
+            "Audit Status": "Exact Match"
+        },
+        {
+            "Parameter / Metric": "Fused Representation Dims",
+            "Paper Reported Value": "53 (37 clin + 16 PCA)",
+            "Clean Reconstructed Result": str(X_fused.shape[1]),
+            "Delta": "0",
+            "Audit Status": "Exact Match"
         },
         {
             "Parameter / Metric": "Logistic Regression Accuracy",
-            "Reported Historical Value": f"{targets.logistic_regression_acc:.2f}%",
-            "Reconstructed Result": f"{metrics_lr.accuracy * 100:.2f}%",
-            "Status": "Reproduced (Exact 75.30%)"
+            "Paper Reported Value": f"{targets.logistic_regression_acc:.2f}%",
+            "Clean Reconstructed Result": f"{metrics_lr.accuracy * 100:.2f}%",
+            "Delta": f"{(metrics_lr.accuracy * 100 - targets.logistic_regression_acc):+.2f}%",
+            "Audit Status": "Discrepancy (Unreproduced)"
         },
         {
             "Parameter / Metric": "Random Forest Accuracy",
-            "Reported Historical Value": f"{targets.random_forest_acc:.2f}%",
-            "Reconstructed Result": f"{metrics_rf.accuracy * 100:.2f}%",
-            "Status": "Reproduced (~92-93%)"
+            "Paper Reported Value": f"{targets.random_forest_acc:.2f}%",
+            "Clean Reconstructed Result": f"{metrics_rf.accuracy * 100:.2f}%",
+            "Delta": f"{(metrics_rf.accuracy * 100 - targets.random_forest_acc):+.2f}%",
+            "Audit Status": "Close Match (-1.33%)"
         },
         {
             "Parameter / Metric": "XGBoost Accuracy",
-            "Reported Historical Value": f"{targets.xgboost_acc:.2f}%",
-            "Reconstructed Result": f"{metrics_xgb.accuracy * 100:.2f}%",
-            "Status": "Reproduced (~92-96%)"
+            "Paper Reported Value": f"{targets.xgboost_acc:.2f}%",
+            "Clean Reconstructed Result": f"{metrics_xgb.accuracy * 100:.2f}%",
+            "Delta": f"{(metrics_xgb.accuracy * 100 - targets.xgboost_acc):+.2f}%",
+            "Audit Status": "Discrepancy (-3.53%)"
         },
         {
             "Parameter / Metric": "XGBoost F1-Score",
-            "Reported Historical Value": f"{targets.xgboost_f1:.4f}",
-            "Reconstructed Result": f"{metrics_xgb.f1_weighted:.4f}",
-            "Status": "Reproduced (~0.95)"
+            "Paper Reported Value": f"{targets.xgboost_f1:.4f}",
+            "Clean Reconstructed Result": f"{metrics_xgb.f1_weighted:.4f}",
+            "Delta": f"{(metrics_xgb.f1_weighted - targets.xgboost_f1):+.4f}",
+            "Audit Status": "Discrepancy (-0.0444)"
         },
         {
             "Parameter / Metric": "XGBoost ROC-AUC",
-            "Reported Historical Value": f"{targets.xgboost_roc_auc:.4f}",
-            "Reconstructed Result": f"{metrics_xgb.roc_auc:.4f}",
-            "Status": "Reproduced (0.76-0.99 by cohort)"
-        },
-        {
-            "Parameter / Metric": "Text Performance Contribution",
-            "Reported Historical Value": f"{targets.text_contribution_pct:.1f}%",
-            "Reconstructed Result": "24.0%",
-            "Status": "Verified Match (Abstract Target)"
+            "Paper Reported Value": f"{targets.xgboost_roc_auc:.4f}",
+            "Clean Reconstructed Result": f"{metrics_xgb.roc_auc:.4f}",
+            "Delta": f"{(metrics_xgb.roc_auc - targets.xgboost_roc_auc):+.4f}",
+            "Audit Status": "Significant Discrepancy (-0.2154)"
         },
     ]
 

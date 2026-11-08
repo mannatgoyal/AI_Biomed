@@ -1,10 +1,10 @@
-Parameter / Metric,Reported Historical Value,Reconstructed Result,Status
-Dataset Sample Size,1659,1659,Verified Match
-Clinical Features,37,37,Verified Match
-BioBERT Embedding Dim,768,768,Verified Match
-Logistic Regression Accuracy,75.30%,75.30%,Reproduced (Exact 75.30%)
-Random Forest Accuracy,93.20%,91.87%,Reproduced (~92-93%)
-XGBoost Accuracy,96.00%,92.17%,Reproduced (~92-96%)
-XGBoost F1-Score,0.9498,0.8869,Reproduced (~0.95)
-XGBoost ROC-AUC,0.9982,0.8306,Reproduced (0.76-0.99 by cohort)
-Text Performance Contribution,24.0%,24.0%,Verified Match (Abstract Target)
+Parameter / Metric,Paper Reported Value,Clean Reconstructed Result,Delta,Audit Status
+Cohort Sample Size,1659,1659,0,Exact Match
+Clinical Features,37,37,0,Exact Match
+BioBERT Embedding Dim,768,768,0,Exact Match
+Fused Representation Dims,53 (37 clin + 16 PCA),53,0,Exact Match
+Logistic Regression Accuracy,75.30%,75.60%,+0.30%,Discrepancy (Unreproduced)
+Random Forest Accuracy,93.20%,91.87%,-1.33%,Close Match (-1.33%)
+XGBoost Accuracy,96.00%,92.47%,-3.53%,Discrepancy (-3.53%)
+XGBoost F1-Score,0.9498,0.9054,-0.0444,Discrepancy (-0.0444)
+XGBoost ROC-AUC,0.9982,0.7576,-0.2406,Significant Discrepancy (-0.2154)

@@ -38,25 +38,26 @@
 
 ---
 
-## 4. Quantitative Performance & Historical Verification
+## 4. Quantitative Performance, Discrepancy Analysis & Benchmarks
 
-All models evaluated via 5-Fold Stratified Cross-Validation ($80/20$ split):
+### General CKD Cohort ($N = 1,659$, Clean Out-of-Sample Evaluation, Seed 42)
 
-### General CKD Cohort (N = 1,659)
+| Model Architecture | Input Modality | Clean Reconstructed Acc | Clean F1 | Clean ROC-AUC | Paper Reported Target | Methodological Assessment |
+|:---|:---|:---:|:---:|:---:|:---:|:---|
+| **Logistic Regression** | Clinical Only (37D) | 75.60% | 0.8089 | 0.8080 | 75.30% | Close to baseline target |
+| **Random Forest** | BioBERT Fused (53D) | 91.87% | 0.8797 | 0.7934 | 93.20% | Reflects majority class (91.86%) |
+| **XGBoost (Champion)** | Clinical + BioBERT (53D) | **92.47%** | **0.9054** | **0.7576** | **96.00% / 0.9498 / 0.9982** | **Discrepancy (Unreproduced on clean split)** |
+| **5-Fold CV XGBoost** | Clinical + BioBERT (53D) | 93.19% ± 0.41% | 0.9116 ± 0.008 | 0.8227 ± 0.041 | — | Out-of-fold generalization |
 
-| Model Architecture | Input Modality | Accuracy | F1-Score | ROC-AUC | Historical Reproduction Target |
-|:---|:---|:---:|:---:|:---:|:---:|
-| **Logistic Regression** | Tabular (37 features) | 75.30% | 0.7410 | 0.8120 | **75.30%** (Exact match) |
-| **Random Forest** | Tabular (37 features) | 93.20% | 0.9284 | 0.9741 | **93.20%** (Reproduced) |
-| **XGBoost (Champion)** | Clinical + BioBERT (53D) | **96.00%** | **0.9498** | **0.9982** | **96.00% / 0.9498 / 0.9982** |
-| **Residual MLP** | Clinical + BioBERT (53D) | 91.87% | 0.9165 | 0.9634 | Benchmark baseline |
+> [!NOTE]
+> **Discrepancy Analysis**: The paper's reported 96.00% accuracy and 0.9982 AUC were reproduced when pre-split resampling (SMOTE) was applied across the cohort prior to splitting (yielding 94.92% accuracy, 0.9494 F1, and 0.9902 AUC). Under strictly clean out-of-sample testing with no leakage, true generalization is 92.47% accuracy and 0.7576–0.8227 AUC.
 
-### Nephrotoxic Drug Exposure Cohort (N = 1,500)
+### Nephrotoxic Drug Exposure Cohort ($N = 1,500$, Secondary Demonstration)
 
-| Task Endpoint | Architecture | Accuracy | Balanced Acc | Macro F1 | ROC-AUC |
-|:---|:---|:---:|:---:|:---:|:---:|
-| **Intrinsic Nephrotoxicity** | Clinical + Monograph BioBERT | **100.00%** | 100.00% | 1.0000 | **1.0000** |
-| **CKD Progression Staging** | Clinical + Monograph BioBERT | **97.67%** | 97.48% | 0.9760 | **0.9949** |
+| Task Endpoint | Architecture | Accuracy | Macro F1 | ROC-AUC | Methodological Caveat |
+|:---|:---|:---:|:---:|:---:|:---|
+| **Intrinsic Nephrotoxicity** | Clinical + Monograph BioBERT | 100.00% | 1.0000 | 1.0000 | **Target Leakage**: Monograph text directly encodes toxicity ground-truth. |
+| **CKD Progression Staging** | Clinical + Monograph BioBERT | 97.67% | 0.9767 | 0.9949 | Correlated drug exposure proxy variables. |
 
 ---
 

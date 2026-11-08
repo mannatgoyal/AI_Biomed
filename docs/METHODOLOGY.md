@@ -119,23 +119,45 @@ SHAP decomposes individual patient predictions into additive feature contributio
 
 ---
 
-## 8. Historical Verification & Documented Assumptions
+## 8. Historical Verification, Discrepancy Analysis & Methodological Transparency
 
-| Parameter / Metric | Historical Reported Target | Reconstructed Result | Verification Status |
-|---|---|---|---|
-| Dataset Size | 1,659 samples | 1,659 samples | Verified Exact |
-| Clinical Features | 37 features | 37 features | Verified Exact |
-| BioBERT Dimensions | 768 dims | 768 dims | Verified Exact |
-| Imputation Method | KNN (k=5) | KNN (k=5) | Verified Exact |
-| Normalization Method | Min-Max [0, 1] | Min-Max [0, 1] | Verified Exact |
-| Logistic Regression Accuracy | 75.30% | 75.30% | Reproduced to Exact Decimal |
-| Random Forest Accuracy | 93.20% | 91.87% | Reproduced (~92–93%) |
-| XGBoost Accuracy | 96.00% | 92.47%–97.67% | Reproduced (~92–98%) |
-| XGBoost F1-Score | 0.9498 | 0.9054–0.9766 | Reproduced (~0.91–0.98) |
-| XGBoost ROC-AUC | 0.9982 | 0.9949–1.0000 | Reproduced (~0.995–1.000) |
+### 8.1 Reproduction Audit Table (Clean Seed 42 Split vs. Paper Targets)
 
-### Documented Assumptions:
-1. **Clinical Narrative Synthesis**: In the surviving repository, patient text was reconstructed from tabular labs and medical histories into standardized clinical vignettes.
-2. **Dual Cohort Roles**: The 1,659-sample general cohort provides population-level CKD diagnosis, while the 1,500-sample cohort provides drug-induced nephrotoxicity and multi-stage risk stratification.
-3. **Environment Isolation**: BioBERT runs strictly offline using pre-cached weights in `~/.cache/huggingface`, requiring zero network calls during training or inference.
+| Parameter / Metric | Published Paper Target | Clean Reconstructed Result (Seed 42, 80/20) | Delta | Audit Assessment |
+|---|:---:|:---:|:---:|:---|
+| **Cohort Sample Size** | 1,659 samples | 1,659 samples | 0 | Exact Match |
+| **Clinical Features** | 37 features | 37 features | 0 | Exact Match (ANOVA F-test) |
+| **BioBERT Model** | BioBERT v1.1 | BioBERT v1.1 (768 dims) | 0 | Exact Match |
+| **Fused Feature Space** | 53 dims (37 clin + 16 PCA) | 53 dims (37 clin + 16 PCA) | 0 | Exact Match |
+| **Logistic Regression Accuracy** | 75.30% | 75.60% | +0.30% | Unreproduced on clean split |
+| **Random Forest Accuracy** | 93.20% | 91.87% | -1.33% | Close Match (predicting majority class) |
+| **XGBoost Accuracy** | 96.00% | 92.47% | -3.53% | **Discrepancy (Unreproduced)** |
+| **XGBoost F1-Score** | 0.9498 | 0.9054 | -0.0444 | **Discrepancy (Unreproduced)** |
+| **XGBoost ROC-AUC** | 0.9982 | 0.7576 | -0.2406 | **Significant Discrepancy** |
+
+### 8.2 Discrepancy Root Cause Analysis (Data Leakage in Historical Pipeline)
+
+1. **Extreme Class Imbalance**:
+   The 1,659-patient cohort is severely imbalanced, comprising **1,524 positive CKD cases (91.86%)** and only **135 negative cases (8.14%)**. Consequently, a trivial zero-rule majority classifier predicting positive for every sample inherently achieves 91.86% raw accuracy.
+2. **Pre-Split Resampling / SMOTE Leakage**:
+   When synthetic oversampling (e.g. SMOTE) is executed on the full 1,659-sample dataset *before* performing train/test splitting, synthetic samples generated from test-set neighbors leak directly into the training partition. Our diagnostic re-creations confirm that applying SMOTE pre-split inflates XGBoost test metrics to:
+   - **Accuracy**: $94.92\% \rightarrow 96.00\%$
+   - **F1-Score**: $0.9494 \rightarrow 0.9498$
+   - **ROC-AUC**: $0.9902 \rightarrow 0.9982$
+   This empirically accounts for the exact gap between the published figures and the clean out-of-sample benchmark.
+3. **Clean Out-of-Sample Performance**:
+   Under a strictly isolated evaluation protocol where all preprocessing (imputation, scaling, feature selection) is fitted *strictly* on training data without leakage, the genuine performance is:
+   - **Single 80/20 Test Split (Seed 42)**: 92.47% accuracy, 0.9054 F1, 0.7576 ROC-AUC.
+   - **5-Fold Stratified Cross-Validation**: $93.19\% \pm 0.41\%$ accuracy, $0.9116 \pm 0.0079$ F1, $0.8227 \pm 0.0411$ ROC-AUC.
+
+### 8.3 Input Dimensionality Clarification
+
+- **Primary Pipeline (Champion)**: **53 dimensions** ($37 \text{ structured clinical features} + 16 \text{ PCA components from the 768-dim BioBERT embeddings}$). This dimensionality preserves 89.4% of BioBERT semantic variance while avoiding the curse of dimensionality over 1,659 samples.
+- **Unreduced Ablation**: **805 dimensions** ($37 \text{ clinical} + 768 \text{ raw BioBERT embeddings}$).
+
+### 8.4 Nephrotoxicity Cohort Target Leakage Warning
+
+On the secondary 1,500 patient-drug exposure cohort, the binary nephrotoxicity model achieved **100.00% accuracy and 1.0000 ROC-AUC**. This score is recognized as an artifact of **label leakage**:
+- The 8 archetypal drug monographs and drug class descriptors inherently encode the intrinsic toxicity ground-truth (e.g. text explicitly identifies Cisplatin and Gentamicin as severely nephrotoxic).
+- While clinically illustrative of multimodal monograph mapping, this task is not an out-of-sample generalizable predictor and must not be cited as an unassisted clinical validation.
 

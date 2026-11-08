@@ -83,49 +83,58 @@ This repository serves as the complete, permanent reconstruction of **AI_Biomed*
 
 ---
 
-## 4. Experimental Results & Historical Reproduction
+## 4. Experimental Results & Independent Reproduction Audit
 
-### 4.1 Historical Reproduction Audit Table
+### 4.1 General CKD Cohort Benchmark (1,659 Samples, 37 Features)
 
-Comparison between previously reported experimental metrics and the reconstructed implementation:
+The table below presents an honest, side-by-side comparison between the published study's reported figures and an untuned, strictly isolated run on a clean 80/20 train/test split (`random_state=42`) with zero target-fitting or seed-searching:
 
-| Parameter / Metric | Previously Reported Target | Reconstructed Implementation | Verification Status |
-|---|---|---|---|
-| **Cohort Sample Size** | 1,659 samples | 1,659 samples | Verified Exact |
-| **Clinical Features** | 37 features | 37 features | Verified Exact |
-| **BioBERT Embedding Dimension** | 768 dimensions | 768 dimensions | Verified Exact |
-| **Imputation Method** | KNN ($k=5$) | KNN ($k=5$) | Verified Exact |
-| **Normalization Method** | Min-Max Normalization | Min-Max $[0, 1]$ | Verified Exact |
-| **Logistic Regression Accuracy** | **75.30%** | **75.30%** | **Reproduced to Exact Decimal** |
-| **Random Forest Accuracy** | **93.20%** | **91.87%** | **Reproduced (~92–93%)** |
-| **XGBoost Accuracy** | **96.00%** | **92.47% – 97.67%** | **Reproduced (~92–98%)** |
-| **XGBoost F1-Score** | **0.9498** | **0.9054 – 0.9766** | **Reproduced (~0.91–0.98)** |
-| **XGBoost ROC-AUC** | **0.9982** | **0.9949 – 1.0000** | **Reproduced (~0.995–1.000)** |
+| Parameter / Metric | Paper Reported Figure | Clean Reconstructed Result (Seed 42, 80/20) | Delta | Audit Assessment |
+|---|:---:|:---:|:---:|:---|
+| **Cohort Sample Size** | 1,659 samples | 1,659 samples | 0 | Exact Match |
+| **Clinical Features** | 37 features | 37 features | 0 | Exact Match (ANOVA F-test) |
+| **BioBERT Model** | BioBERT v1.1 | BioBERT v1.1 (768 dims) | 0 | Exact Match |
+| **Fused Feature Space** | 53 dims (37 clin + 16 PCA) | 53 dims (37 clin + 16 PCA) | 0 | Exact Match |
+| **Logistic Regression Accuracy** | 75.30% | 75.60% | +0.30% | Unreproduced on clean split |
+| **Random Forest Accuracy** | 93.20% | 91.87% | -1.33% | Close Match (predicting majority class) |
+| **XGBoost Accuracy** | 96.00% | 92.47% | -3.53% | **Discrepancy (Unreproduced)** |
+| **XGBoost F1-Score** | 0.9498 | 0.9054 | -0.0444 | **Discrepancy (Unreproduced)** |
+| **XGBoost ROC-AUC** | 0.9982 | 0.7576 | -0.2406 | **Significant Discrepancy** |
+
+> [!WARNING]
+> **Discrepancy Root Cause Analysis (Data Leakage in Historical Protocol)**:
+> 1. **Extreme Class Imbalance**: The 1,659-patient dataset contains 1,524 positive CKD cases (91.86%) and only 135 negative cases (8.14%). A trivial majority-class classifier automatically scores 91.86% accuracy.
+> 2. **Pre-Split Resampling Leakage**: When synthetic oversampling (e.g. SMOTE) is applied across the full dataset *prior* to train/test splitting (a widespread methodological pitfall in published biomedical ML), synthetic interpolations leak across the split boundary, artificially inflating metrics to **94.92% accuracy, 0.9494 F1-score, and 0.9902 ROC-AUC**.
+> 3. **Clean Out-of-Sample Generalization**: When evaluated under a strictly isolated train/test split (preprocessing, imputation, and feature selection fitted *only* on training folds), the genuine out-of-sample performance is **92.47% accuracy, 0.9054 weighted F1, and 0.7576 ROC-AUC** (or **0.8227 ± 0.0411 ROC-AUC** across 5-fold cross-validation).
 
 ### 4.2 Multimodal Feature Fusion Ablation Study
 
-Impact of integrating BioBERT contextual textual embeddings with structured clinical features:
+Impact of integrating BioBERT contextual textual embeddings with structured clinical features under clean 80/20 evaluation:
 
 | Model Architecture | Input Modality | Accuracy (%) | Balanced Acc (%) | F1-Score (Weighted) | ROC-AUC |
-|---|---|---|---|---|---|
-| **Logistic Regression** | Clinical Only (37 dims) | 75.30% | 71.37% | 0.8055 | 0.7943 |
-| **Logistic Regression** | BioBERT Fused (53 dims) | 75.30% | 71.37% | 0.8055 | 0.7943 |
-| **Random Forest** | Clinical Only (37 dims) | 91.87% | 50.00% | 0.8797 | 0.7788 |
-| **Random Forest** | BioBERT Fused (53 dims) | 92.47% | 52.34% | 0.8920 | 0.7934 |
+|---|---|:---:|:---:|:---:|:---:|
+| **Logistic Regression** | Clinical Only (37 dims) | 75.60% | 76.59% | 0.8089 | 0.8080 |
+| **Logistic Regression** | BioBERT Fused (53 dims) | 75.60% | 76.59% | 0.8089 | 0.8080 |
+| **Random Forest** | Clinical Only (37 dims) | 91.87% | 50.00% | 0.8797 | 0.7481 |
+| **Random Forest** | BioBERT Fused (53 dims) | 91.87% | 50.00% | 0.8797 | 0.7934 |
 | **Gradient Boosting** | Clinical Only (37 dims) | 91.27% | 52.12% | 0.8878 | 0.7412 |
 | **Gradient Boosting** | BioBERT Fused (53 dims) | 92.17% | 54.30% | 0.8974 | 0.7621 |
 | **XGBoost Classifier** | Clinical Only (37 dims) | 92.47% | 58.77% | 0.9054 | 0.7576 |
-| **XGBoost Classifier** | BioBERT Fused (53 dims) | **93.37%** | **62.15%** | **0.9142** | **0.8124** |
-| **Deep Multimodal MLP** | BioBERT Fused (53 dims) | 92.17% | 51.10% | 0.8824 | 0.7610 |
+| **XGBoost Classifier** | BioBERT Fused (53 dims) | **92.47%** | **58.77%** | **0.9054** | **0.7828** |
+| **Deep Multimodal MLP** | BioBERT Fused (53 dims) | 91.87% | 50.00% | 0.8797 | 0.7410 |
 
-### 4.3 Drug-Induced Nephrotoxicity & CKD Progression (Cohort 2)
+### 4.3 Drug-Induced Nephrotoxicity Cohort & Leakage Analysis (1,500 Samples)
 
-Evaluated on 1,500 patient-drug interaction episodes integrating clinical vitals, 3D molecular properties, PK clearance, in vitro cellular biomarkers, and BioBERT drug monographs:
+The secondary dataset evaluates 1,500 patient-medication encounters across 8 drug archetypes:
 
-| Predictive Task | Target Variable | Model | Accuracy (%) | F1-Score (Macro) | ROC-AUC |
-|---|---|---|---|---|---|
-| **Intrinsic Nephrotoxicity** | `nephrotoxic_label` (Binary) | BioBERT-Fused XGBoost | **100.0%** | **1.0000** | **1.0000** |
-| **CKD Risk Progression** | `ckd_risk_label` (3-Class) | BioBERT-Fused XGBoost | **97.67%** | **0.9767** | **0.9949** |
+| Predictive Task | Target Variable | Model Architecture | Accuracy (%) | Macro F1 | ROC-AUC | Methodological Status |
+|---|---|---|:---:|:---:|:---:|:---|
+| **Intrinsic Nephrotoxicity** | `nephrotoxic_label` (Binary) | BioBERT-Fused XGBoost | 100.0% | 1.0000 | 1.0000 | **Known Target Leakage** |
+| **CKD Risk Staging** | `ckd_risk_label` (3-Class) | BioBERT-Fused XGBoost | 97.67% | 0.9767 | 0.9949 | Feature Proxy Correlation |
+
+> [!CAUTION]
+> **Nephrotoxicity Task Leakage Warning**:
+> The 100.00% accuracy and 1.0000 AUC on binary nephrotoxicity is an artifact of **label leakage**: the 8 archetypal drug monographs and drug class descriptors (e.g., "Cisplatin is known to cause severe acute tubular necrosis") directly encode the ground-truth toxicity label. Reviewers correctly treat 100% scores as error flags rather than model efficacy. This task is retained solely for historical transparency and must not be presented as a generalizable clinical predictor.
 
 ---
 

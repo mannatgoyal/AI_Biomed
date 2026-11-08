@@ -1,4 +1,4 @@
 Model,Accuracy (%),Balanced Acc (%),F1-Score (Weighted),F1-Score (Macro),Precision,Recall,ROC-AUC
-Logistic Regression,75.3,61.24,0.8021,0.5397,0.8766,0.753,0.7598
-Random Forest,91.87,50.0,0.8797,0.4788,0.844,0.9187,0.8413
-XGBoost Classifier,92.17,51.85,0.8869,0.5153,0.9278,0.9217,0.8306
+Logistic Regression,75.6,76.59,0.8089,0.5959,0.9131,0.756,0.808
+Random Forest,91.87,50.0,0.8797,0.4788,0.844,0.9187,0.7934
+XGBoost Classifier,92.47,58.77,0.9054,0.623,0.9071,0.9247,0.7576
