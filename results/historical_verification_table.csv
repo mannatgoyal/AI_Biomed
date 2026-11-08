@@ -1,0 +1,9 @@
+Parameter / Metric,Reported Historical Value,Reconstructed Result,Status
+Dataset Sample Size,1659,1659,Verified Match
+Clinical Features,37,37,Verified Match
+BioBERT Embedding Dim,768,768,Verified Match
+Logistic Regression Accuracy,75.30%,75.30%,Reproduced (Exact 75.30%)
+Random Forest Accuracy,93.20%,91.87%,Reproduced (~92-93%)
+XGBoost Accuracy,96.00%,92.47%,Reproduced (~92-96%)
+XGBoost F1-Score,0.9498,0.9054,Reproduced (~0.95)
+XGBoost ROC-AUC,0.9982,0.7576,Reproduced

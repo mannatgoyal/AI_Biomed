@@ -1,0 +1,24 @@
+# AI_Biomed: Dependencies and Research Environment Requirements
+# Python >= 3.10
+
+# Core Machine Learning & Scientific Computing
+numpy>=1.24.0
+scipy>=1.10.0
+pandas>=2.0.0
+scikit-learn>=1.3.0
+xgboost>=2.0.0
+imbalanced-learn>=0.12.0
+
+# Deep Learning & Transformers
+torch>=2.0.0
+transformers>=4.35.0
+
+# Model Explainability & Interpretability
+shap>=0.45.0
+
+# Data Visualization & Graphics
+matplotlib>=3.8.0
+seaborn>=0.13.0
+
+# Quality Assurance & Testing
+pytest>=8.0.0
